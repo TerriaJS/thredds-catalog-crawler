@@ -6,7 +6,7 @@ export default class Dataset {
         this.parent = parent
         this.id = datasetJson.$ID
         this.name = datasetJson.$name
-        this.urlPath = datasetJson.$urlPath
+        this.urlPath = datasetJson.$urlPath ? datasetJson.$urlPath : null
 
         this.dataType = datasetJson.dataType ? datasetJson.dataType : null
         this.dataFormat = datasetJson.dataFormat ? datasetJson.dataFormat : null
