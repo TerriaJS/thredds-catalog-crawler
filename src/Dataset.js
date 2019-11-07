@@ -52,8 +52,8 @@ export default class Dataset {
             for (let i = 0; i < json.catalogRef.length; i++) {
                 const url = this._cleanUrl(json.catalogRef[i]['$xlink:href'])
                 try {
-                    const catalogJson = this.parentCatalog.requestor.getData(url)
-                    const ci = new Catalog(url, catalogJson, this, this.parentCatalog.requestor)
+                    const catalogJson = this.parent._requestor.getData(url)
+                    const ci = new Catalog(url, catalogJson, this, this.parent._requestor)
                     await ci.processCatalog()
                     await ci.getNestedCatalogData()
                     this.catalogs.push(ci)
@@ -80,7 +80,7 @@ export default class Dataset {
     }
 
     get parentCatalog () {
-        if (this.parent.isParentDataset) {
+        if (this.isParentDataset) {
             return this.parent.parent
         }
         return this.parent
