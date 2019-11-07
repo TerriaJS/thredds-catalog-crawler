@@ -58,7 +58,10 @@ export default class Dataset {
                     await ci.getNestedCatalogData()
                     this.catalogs.push(ci)
                 } catch (err) {
-                    console.log('Couldnt create catalog within dataset: ', url, err)
+                    console.error(`Couldn't create catalog within dataset:
+                        Dataset URL: ${url}
+                        ${err}`
+                    )
                 }
             }
         }
@@ -68,11 +71,6 @@ export default class Dataset {
         // If the url is absolute return it as is...
         if (url.indexOf('://') >= 0) return url
 
-        // // sometimes the url reference seems to be malformed...
-        // if (url.indexOf('thredds') === -1) {
-        //     return `${this.parent._rootUrl}/thredds/${url}`
-        // }
-        // This ought to be the norm
         return `${this.parent._catalogBaseUrl}${url}`
     }
 

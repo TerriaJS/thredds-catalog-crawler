@@ -16,10 +16,18 @@ export default class Catalog {
         this._requestor = requestor
         this._urlObj = requestor.parseUrl(this.url)
 
-        this._path = this._urlObj.pathname.split('/').filter(p => p !== '')
+        // If the requests are being proxied in the browser there is potential
+        // to muck up the WMS url construction
+        if ((this.url.match(/:\//g)).length > 1) {
+            const origUrlParts = this.url.split('://')
+            this._unproxiedUrl = `${origUrlParts[0]}://${origUrlParts[2]}`
+            this._unproxiedUrlObj = requestor.parseUrl(this._unproxiedUrl)
+        } else {
+            this._unproxiedUrlObj = this._urlObj
+        }
 
         this._catalogBaseUrl = this.url.replace('catalog.xml', '')
-        this._rootUrl = `${this._urlObj.protocol}//${this._urlObj.host}`
+        this._rootUrl = `${this._unproxiedUrlObj.protocol}//${this._unproxiedUrlObj.host}`
     }
 
     get hasDatasets () {
@@ -71,7 +79,7 @@ export default class Catalog {
                     this.catalogs.push(ci)
                 } catch (err) {
                     console.error(`
-                        Couldnt create catalog in catalog: ${url}
+                        Couldn't create catalog in catalog: ${url}
                         Parent was: ${this.url}
                         ${err}`
                     )
@@ -84,6 +92,7 @@ export default class Catalog {
     // This isn't ideal as theoretically a dataset might
     // have access to one set of services but not another,
     // eg a set of service might provide WMS access, while another set don't
+    // This is part of the metadata available in the xml but it's fiddily
     _getServicesRecursively (serviceInfo) {
         if (Array.isArray(serviceInfo)) serviceInfo = serviceInfo[0]
         for (let i = 0; i < serviceInfo.service.length; i++) {
