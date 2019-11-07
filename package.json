@@ -3,8 +3,7 @@
   "version": "0.0.1",
   "description": "A module for crawling thredds catalogs",
   "browser": "dist/threddsCrawler.min.js",
-  "main": "dist/threddsCrawler.js",
-  "module": "src/main.js",
+  "main": "dist/threddsCrawlerNode.js",
   "unpkg": "dist/threddsCrawler.min.js",
   "jsdelivr": "dist/threddsCrawler.min.js",
   "scripts": {

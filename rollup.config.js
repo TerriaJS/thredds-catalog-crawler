@@ -3,24 +3,29 @@ import resolve from 'rollup-plugin-node-resolve'
 import json from 'rollup-plugin-json'
 import { terser } from 'rollup-plugin-terser'
 
-const output = (outputName, plugins) => ({
-    input: './src/main.js',
+const output = (input, format, outputName, plugins) => ({
+    input,
     output: {
         name: 'threddsCrawler',
         file: outputName,
-        format: 'umd',
+        format,
         exports: 'default'
     },
     plugins
 })
 
 export default [
-    output('./dist/threddsCrawler.js', [
+    output('./src/entryNode.js', 'cjs', './dist/threddsCrawlerNode.js', [
         json(),
         commonjs(),
         resolve()
     ]),
-    output('./dist/threddsCrawler.min.js', [
+    output('./src/entryBrowser.js', 'umd', './dist/threddsCrawler.js', [
+        json(),
+        commonjs(),
+        resolve()
+    ]),
+    output('./src/entryBrowser.js', 'umd', './dist/threddsCrawler.min.js', [
         json(),
         commonjs(),
         resolve(),

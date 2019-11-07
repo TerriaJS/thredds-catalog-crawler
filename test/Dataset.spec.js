@@ -1,7 +1,7 @@
 import test from 'ava'
 import 'isomorphic-fetch'
 import { startServer } from './xmlServer'
-import threddsCatalogCrawler from '../src/main'
+import threddsCatalogCrawler from '../src/entryNode'
 
 let catalog = null
 let dataset = null
@@ -9,6 +9,7 @@ let dataset = null
 test.before(async t => {
     t.context.server = await startServer()
     catalog = await threddsCatalogCrawler(`${t.context.server}/thredds/catalog.xml`)
+    await catalog.getNestedCatalogData()
     dataset = catalog.datasets[0]
 });
 

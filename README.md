@@ -13,6 +13,7 @@ import threddsCrawler from 'thredds-catalog-crawler'
 
 async function getDatasets() {
     const catalog = await threddsCrawler('http://something/thredds/catalog/my/catalog.xml')
+    await catalog.getNestedCatalogData()
     const datasets = catalog.getAllChildDatasets()
 }
 getDatasets()
@@ -24,13 +25,13 @@ const threddsCrawler = require('thredds-catalog-crawler')
 
 threddsCrawler('http://something/thredds/catalog/my/catalog.xml')
 .then(function (catalog) {
-    console.log(catalog)
+    catalog.getNestedCatalogData()
 })
 ````
 
 ### Dependencies
 This package uses the [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API). If you're using this library in NodeJS you'll need a fetch polyfill like [isomorphic-fetch](https://www.npmjs.com/package/isomorphic-fetch) or if you want to support older browsers we'd suggest [unfetch](https://github.com/developit/unfetch).
-You may also need a [URL API](https://developer.mozilla.org/en-US/docs/Web/API/URL/URL) polyfill such as [url-polyfill](https://www.npmjs.com/package/url-polyfill)
+You may also need a [URL API](https://developer.mozilla.org/en-US/docs/Web/API/URL/URL) polyfill such as [url-polyfill](https://www.npmjs.com/package/url-polyfill) for older browsers.
 ````
 import 'isomorphic-fetch'
 import 'url-polyfill'
@@ -41,7 +42,7 @@ import threddsCrawler from 'thredds-catalog-crawler'
 ## API
 
 ### Catalog
-A `Catalog` represents the root object in a THREDDS heirarchy. Catalogs can contain datasets, as well as other catalogs.
+A `Catalog` represents the root object in a THREDDS heirarchy. Catalogs can contain datasets, as well as references to other catalogs.
 
 #### Properties
 | Property      | Type      | Description   |
@@ -51,6 +52,8 @@ A `Catalog` represents the root object in a THREDDS heirarchy. Catalogs can cont
 | datasets      | Array     | An array of datasets found in the catalog |
 | catalogs      | Array     | An array of nested catalogs found in the catalog |
 | services      | Object    | An object containing the available services for a catalog, organised by service type | 
+| hasDatasets   | Boolean   | Indicates whether the catalog contains datasets directly |
+| hasNestedCatalogs   | Boolean   | Indicates whether the catalog contains nested catalogs |
 | wmsBase       | String    | The base url for a WMS service. If no WMS support is available then null. |
 | supportsWms   | Boolean   | Does a catalog have a WMS service for datasets |
 
@@ -58,9 +61,12 @@ A `Catalog` represents the root object in a THREDDS heirarchy. Catalogs can cont
 | Method                | Returns         | Description  |
 | --------------------- | --------------- | ------------ |
 | getAllChildDatasets   | Array[Dataset1, Dataset2...] | Returns a flattened array of datasets from all nested catalogs |
+| getNestedCatalogData  | N/A             | Crawls nested catalogs - used to populate the `catalogs`property |
 
 
 ### Dataset
+A `Dataset` can contain datasets, as well as references to other catalogs.
+
 #### Properties
 | Property          | Type           | Description   |
 | ----------------- | -------------- | ------------- |

@@ -1,3 +1,5 @@
+import Catalog from './Catalog'
+
 export default class Dataset {
 
     constructor (datasetJson, parent) {
@@ -6,22 +8,32 @@ export default class Dataset {
         this.name = datasetJson.$name
         this.urlPath = datasetJson.$urlPath
 
-        this.dataType = datasetJson.dataType
-        this.dataFormat = datasetJson.dataFormat
+        this.dataType = datasetJson.dataType ? datasetJson.dataType : null
+        this.dataFormat = datasetJson.dataFormat ? datasetJson.dataFormat : null
 
-        this.dataSize = {
-            size: datasetJson.dataSize['#text'],
-            unit: datasetJson.dataSize.$units
+        if (datasetJson.dataSize) {
+            this.dataSize = {
+                size: datasetJson.dataSize['#text'],
+                unit: datasetJson.dataSize.$units
+            }
+        } else {
+            this.dataSize = null
         }
 
-        this.date = {
-            size: datasetJson.date['#text'],
-            type: datasetJson.date.$type
+        if (datasetJson.date) {
+            this.date = {
+                size: datasetJson.date['#text'],
+                type: datasetJson.date.$type
+            }
+        } else {
+            this.date = null
         }
 
-        this.isParentDataset = this.urlPath === undefined
+        this.isParentDataset = this.dataSize === null
         this.datasets = []
         this._datasetJson = datasetJson
+
+        this.catalogs = []
     }
 
     async getNestedData () {
@@ -34,6 +46,34 @@ export default class Dataset {
                 this.datasets.push(ds)
             }
         }
+
+        if (json.catalogRef) {
+            if (!Array.isArray(json.catalogRef)) json.catalogRef = [json.catalogRef]
+            for (let i = 0; i < json.catalogRef.length; i++) {
+                const url = this._cleanUrl(json.catalogRef[i]['$xlink:href'])
+                try {
+                    const catalogJson = this.parentCatalog.requestor.getData(url)
+                    const ci = new Catalog(url, catalogJson, this, this.parentCatalog.requestor)
+                    await ci.processCatalog()
+                    await ci.getNestedCatalogData()
+                    this.catalogs.push(ci)
+                } catch (err) {
+                    console.log('Couldnt create catalog within dataset: ', url, err)
+                }
+            }
+        }
+    }
+
+    _cleanUrl (url) {
+        // If the url is absolute return it as is...
+        if (url.indexOf('://') >= 0) return url
+
+        // // sometimes the url reference seems to be malformed...
+        // if (url.indexOf('thredds') === -1) {
+        //     return `${this.parent._rootUrl}/thredds/${url}`
+        // }
+        // This ought to be the norm
+        return `${this.parent._catalogBaseUrl}${url}`
     }
 
     get wmsUrl () {

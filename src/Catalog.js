@@ -1,12 +1,9 @@
-import { getData } from './requestor'
-import { parseUrl } from './urlParsing'
 import Dataset from './Dataset'
 import Service from './Service'
 
-// http://dapds00.nci.org.au/thredds/catalog/fx3/gbr4/catalog.xml
 export default class Catalog {
 
-    constructor (catalogUrl, catalogJson, parentCatalog) {
+    constructor (catalogUrl, catalogJson, parentCatalog, requestor) {
 
         this.url = catalogUrl
         this.name = catalogJson.$name ? catalogJson.$name : null
@@ -16,16 +13,34 @@ export default class Catalog {
         this.parentCatalog = parentCatalog
         this._catalogJson = catalogJson
 
-        this._urlObj = parseUrl(this.url)
+        this._requestor = requestor
+        this._urlObj = requestor.parseUrl(this.url)
 
         this._path = this._urlObj.pathname.split('/').filter(p => p !== '')
 
+        this._catalogBaseUrl = this.url.replace('catalog.xml', '')
         this._rootUrl = `${this._urlObj.protocol}//${this._urlObj.host}`
     }
 
-    async getCatalogData () {
+    get hasDatasets () {
+        return 'dataset' in this._catalogJson
+    }
+
+    get hasNestedCatalogs () {
+        return 'catalogRef' in this._catalogJson
+    }
+
+    get supportsWms () {
+        return 'wms' in this.services
+    }
+
+    get wmsBase () {
+        if (!this.supportsWms) return null
+        return `${this._rootUrl}${this.services.wms.baseUrl}`
+    }
+
+    async processCatalog () {
         const json = this._catalogJson
-        this.name = json.$name ? json.$name : json['$xlink:title']
 
         if (json.dataset) {
             if (!Array.isArray(json.dataset)) json.dataset = [json.dataset]
@@ -37,26 +52,46 @@ export default class Catalog {
         }
 
         if (json.service) {
-            let serviceInfo = json.service
-            if (Array.isArray(serviceInfo)) serviceInfo = serviceInfo[0]
-            for (let i = 0; i < serviceInfo.service.length; i++) {
-                const srv = new Service(serviceInfo.service[i])
-                this.services[srv.name] = srv
-            }
+            this._getServicesRecursively(json.service)
         }
+    }
+
+    async getNestedCatalogData () {
+        const json = this._catalogJson
 
         if (json.catalogRef) {
             if (!Array.isArray(json.catalogRef)) json.catalogRef = [json.catalogRef]
             for (let i = 0; i < json.catalogRef.length; i++) {
                 const url = this._cleanUrl(json.catalogRef[i]['$xlink:href'])
                 try {
-                    const catalogJson = await getData(url)
-                    const ci = new Catalog(url, catalogJson, this)
-                    await ci.getCatalogData()
+                    const catalogJson = await this._requestor.getData(url)
+                    const ci = new Catalog(url, catalogJson, this, this._requestor)
+                    await ci.processCatalog()
+                    await ci.getNestedCatalogData()
                     this.catalogs.push(ci)
                 } catch (err) {
-                    console.log('Couldnt get: ', url, err)
+                    console.error(`
+                        Couldnt create catalog in catalog: ${url}
+                        Parent was: ${this.url}
+                        ${err}`
+                    )
                 }
+            }
+        }
+    }
+
+    // Services can be nested so crawl recurssively.
+    // This isn't ideal as theoretically a dataset might
+    // have access to one set of services but not another,
+    // eg a set of service might provide WMS access, while another set don't
+    _getServicesRecursively (serviceInfo) {
+        if (Array.isArray(serviceInfo)) serviceInfo = serviceInfo[0]
+        for (let i = 0; i < serviceInfo.service.length; i++) {
+            const service = serviceInfo.service[i]
+            if ('service' in service) this._getServicesRecursively(service)
+            else {
+                const srv = new Service(service)
+                this.services[srv.name] = srv
             }
         }
     }
@@ -70,14 +105,15 @@ export default class Catalog {
     // And it also might have  xlink:href="aggregation/scaled_seasonal_timeseries.xml"
     // which should go to      https://climate-services.it.csiro.au/thredds/aggregation/scaled_seasonal_timeseries.xml
     _cleanUrl (url) {
-        // If the url is absolute return it as is...
+        // If the url is absolute go directly to it
         if (url.indexOf('://') >= 0) return url
 
-        // sometimes the url reference seems to be malformed...
+        // Sometimes urls seems to extend from the current catalog
         if (url.indexOf('thredds') === -1) {
-            return `${this._rootUrl}/thredds/${url}`
+            return `${this._catalogBaseUrl}/${url}`
         }
-        // This ought to be the norm
+
+        // Sometimes the url reference seems to reference the root of the thredds server
         return `${this._rootUrl}${url}`
     }
 
@@ -96,15 +132,6 @@ export default class Catalog {
             }
         }
         return ds
-    }
-
-    get supportsWms () {
-        return 'wms' in this.services
-    }
-
-    get wmsBase () {
-        if (!this.supportsWms) return null
-        return `${this._rootUrl}${this.services.wms.baseUrl}`
     }
 
 }

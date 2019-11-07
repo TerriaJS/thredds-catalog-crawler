@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" name="My Parent Catalog" version="1.0.1">
-  <catalogRef name="" ID="subCatalog" xlink:href="/sub-catalog-a/catalog.xml" xlink:title="sdfkns">
+  <catalogRef name="" ID="subCatalog" xlink:href="/thredds/sub-catalog-a/catalog.xml" xlink:title="sdfkns">
   </catalogRef>
-  <catalogRef name="" ID="subCatalog2" xlink:href="/sub-catalog-b/catalog.xml" xlink:title="sdfkns">
+  <catalogRef name="" ID="subCatalog2" xlink:href="/thredds/sub-catalog-b/catalog.xml" xlink:title="sdfkns">
   </catalogRef>
   <service name="all" serviceType="Compound" base="">
     <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/"/>
@@ -12,7 +12,7 @@
     <service name="ncml" serviceType="NCML" base="/thredds/ncml/"/>
     <service name="uddc" serviceType="UDDC" base="/thredds/uddc/"/>
     <service name="iso" serviceType="ISO" base="/thredds/iso/"/>
-</service>
+  </service>
   <dataset name="eReefs GBR4 SHOC Model v1.85 Results for 2016-06" ID="fx3-gbr4/gbr4_simple_2016-06.nc" urlPath="fx3/gbr4/gbr4_simple_2016-06.nc">
     <dataSize units="Gbytes">4.562</dataSize>
     <date type="modified">2016-06-08T21:36:11Z</date>
