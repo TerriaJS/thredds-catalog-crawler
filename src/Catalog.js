@@ -6,13 +6,16 @@ export default class Catalog {
     constructor (catalogUrl, catalogJson, parentCatalog, requestor) {
 
         this.url = catalogUrl
-        this.name = catalogJson.$name ? catalogJson.$name : null
+        this.name = catalogJson !== null ? catalogJson.$name : null
+        this.title = catalogJson !== null ? catalogJson['$xlink:title'] : null
+        this.id = catalogJson !== null ? catalogJson.$ID : null
+        this.isLoaded = false
         this.datasets = []
         this.catalogs = []
         this.services = {}
         this.parentCatalog = parentCatalog
-        this._catalogJson = catalogJson
 
+        this._catalogJson = catalogJson
         this._requestor = requestor
         this._urlObj = requestor.parseUrl(this.url)
 
@@ -37,8 +40,17 @@ export default class Catalog {
         return `${this._rootUrl}${this.services.wms.baseUrl}`
     }
 
-    async processCatalog () {
+    async loadCatalog () {
+        this._catalogJson = await this._requestor.getData(this.url)
+        this.isLoaded = true
+        await this._processCatalog()
+    }
+
+    async _processCatalog () {
         const json = this._catalogJson
+        if (this.name === null || this.name === '') this.name = json.$name
+        if (this.title === null || this.title === '') this.title = json['$xlink:title']
+        if (this.id === null) this.id = json.ID
 
         if (json.dataset) {
             if (!Array.isArray(json.dataset)) json.dataset = [json.dataset]
@@ -52,20 +64,13 @@ export default class Catalog {
         if (json.service) {
             this._getServicesRecursively(json.service)
         }
-    }
-
-    async getNestedCatalogData () {
-        const json = this._catalogJson
 
         if (json.catalogRef) {
             if (!Array.isArray(json.catalogRef)) json.catalogRef = [json.catalogRef]
             for (let i = 0; i < json.catalogRef.length; i++) {
                 const url = this._cleanUrl(json.catalogRef[i]['$xlink:href'])
                 try {
-                    const catalogJson = await this._requestor.getData(url)
-                    const ci = new Catalog(url, catalogJson, this, this._requestor)
-                    await ci.processCatalog()
-                    await ci.getNestedCatalogData()
+                    const ci = new Catalog(url, json.catalogRef[i], this, this._requestor)
                     this.catalogs.push(ci)
                 } catch (err) {
                     console.error(`
@@ -75,6 +80,44 @@ export default class Catalog {
                     )
                 }
             }
+        }
+    }
+
+    async getAllNestedCatalogs () {
+        for (let i = 0; i < this.catalogs.length; i++) {
+            const catalog = this.catalogs[i]
+            try {
+                await catalog.loadCatalog()
+                await catalog.getAllNestedCatalogs()
+            } catch (err) {
+                console.error(`
+                    Couldn't create catalog in catalog: ${catalog.url}
+                    Parent was: ${this.url}
+                    ${err}`
+                )
+            }
+        }
+    }
+
+    async getNestedCatalogById (id) {
+        let catalogFound = false
+        for (let i = 0; i < this.catalogs.length; i++) {
+            const catalog = this.catalogs[i]
+            if (catalog.id !== id) continue
+            catalogFound = true
+            try {
+                await catalog.loadCatalog()
+                return catalog
+            } catch (err) {
+                console.error(`
+                    Couldn't create catalog in catalog: ${catalog.url}
+                    Parent was: ${this.url}
+                    ${err}`
+                )
+            }
+        }
+        if (!catalogFound) {
+            throw new Error(`Could not find catalog using id: ${id}`)
         }
     }
 
