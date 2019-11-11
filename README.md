@@ -13,7 +13,7 @@ import threddsCrawler from 'thredds-catalog-crawler'
 
 async function crawlThredds() {
     const catalog = await threddsCrawler('http://something/thredds/catalog/my/catalog.xml')
-    await catalog.getAllNestedCatalogs()
+    await catalog.loadAllNestedCatalogs()
     const datasets = catalog.getAllChildDatasets()
 }
 crawlThredds()
@@ -25,7 +25,7 @@ const threddsCrawler = require('thredds-catalog-crawler')
 
 threddsCrawler('http://something/thredds/catalog/my/catalog.xml')
 .then(function (catalog) {
-    catalog.getAllNestedCatalogs()
+    catalog.loadAllNestedCatalogs()
 })
 ````
 
