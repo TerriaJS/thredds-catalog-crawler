@@ -71,7 +71,7 @@ export default class Dataset {
         // If the url is absolute return it as is...
         if (url.indexOf('://') >= 0) return url
 
-        return `${this.parent._catalogBaseUrl}${url}`
+        return `${this.parentCatalog._catalogBaseUrl}${url}`
     }
 
     get wmsUrl () {
@@ -80,10 +80,11 @@ export default class Dataset {
     }
 
     get parentCatalog () {
-        if (this.isParentDataset) {
-            return this.parent.parent
+        const p = this.parent
+        if (p.isParentDataset) {
+            return p.parent
         }
-        return this.parent
+        return p
     }
 
     get supportsWms () {
