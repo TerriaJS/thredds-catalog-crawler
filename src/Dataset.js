@@ -53,8 +53,8 @@ export default class Dataset {
                 const url = this._cleanUrl(json.catalogRef[i]['$xlink:href'])
                 try {
                     const ci = new Catalog(url, json.catalogRef[i], this, this.parent._requestor)
-                    await ci.loadCatalog()
-                    await ci.getAllNestedCatalogs()
+                    await ci._loadCatalog()
+                    await ci.loadAllNestedCatalogs()
                     this.catalogs.push(ci)
                 } catch (err) {
                     console.error(`Couldn't create catalog within dataset:

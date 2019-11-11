@@ -9,7 +9,7 @@ let dataset = null
 test.before(async t => {
     t.context.server = await startServer()
     catalog = await threddsCatalogCrawler(`${t.context.server}/thredds/catalog.xml`)
-    await catalog.getAllNestedCatalogs()
+    await catalog.loadAllNestedCatalogs()
     dataset = catalog.datasets[0]
 });
 

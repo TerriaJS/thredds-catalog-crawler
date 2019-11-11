@@ -8,7 +8,7 @@ let catalog = null
 test.before(async t => {
     t.context.server = await startServer()
     catalog = await threddsCatalogCrawler(`${t.context.server}/thredds/catalog.xml`)
-    await catalog.getAllNestedCatalogs()
+    await catalog.loadAllNestedCatalogs()
 });
 
 test('Catalog has correct properties', function (t) {

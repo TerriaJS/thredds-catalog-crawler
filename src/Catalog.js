@@ -40,7 +40,7 @@ export default class Catalog {
         return `${this._rootUrl}${this.services.wms.baseUrl}`
     }
 
-    async loadCatalog () {
+    async _loadCatalog () {
         this._catalogJson = await this._requestor.getData(this.url)
         this.isLoaded = true
         await this._processCatalog()
@@ -83,12 +83,12 @@ export default class Catalog {
         }
     }
 
-    async getAllNestedCatalogs () {
+    async loadAllNestedCatalogs () {
         for (let i = 0; i < this.catalogs.length; i++) {
             const catalog = this.catalogs[i]
             try {
-                await catalog.loadCatalog()
-                await catalog.getAllNestedCatalogs()
+                await catalog._loadCatalog()
+                await catalog.loadAllNestedCatalogs()
             } catch (err) {
                 console.error(`
                     Couldn't create catalog in catalog: ${catalog.url}
@@ -99,14 +99,14 @@ export default class Catalog {
         }
     }
 
-    async getNestedCatalogById (id) {
+    async loadNestedCatalogById (id) {
         let catalogFound = false
         for (let i = 0; i < this.catalogs.length; i++) {
             const catalog = this.catalogs[i]
             if (catalog.id !== id) continue
             catalogFound = true
             try {
-                await catalog.loadCatalog()
+                await catalog._loadCatalog()
                 return catalog
             } catch (err) {
                 console.error(`

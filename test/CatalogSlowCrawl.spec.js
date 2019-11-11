@@ -19,7 +19,7 @@ test('Parent Catalog does not yet all have all children', function (t) {
 
 test('Catalog can retrieve child by ID', async function (t) {
     t.is(catalog.catalogs.length, 2)
-    const newCatalog = await catalog.getNestedCatalogById('subCatalog2')
+    const newCatalog = await catalog.loadNestedCatalogById('subCatalog2')
     t.is(newCatalog.title, 'Some Catalog 2')
     t.is(newCatalog.datasets.length, 1)
     t.is(newCatalog.catalogs.length, 1)
@@ -36,7 +36,7 @@ test('Catalog can retrieve child by ID', async function (t) {
 
 test('Check that catalog throws errors', async function (t) {
     await t.throwsAsync(async () => {
-        await catalog.getNestedCatalogById('asfbjd');
+        await catalog.loadNestedCatalogById('asfbjd');
     }, {
         instanceOf: Error,
         message: 'Could not find catalog using id: asfbjd'

@@ -11,12 +11,12 @@ npm install thredds-catalog-crawler --save
 ````
 import threddsCrawler from 'thredds-catalog-crawler'
 
-async function getDatasets() {
+async function crawlThredds() {
     const catalog = await threddsCrawler('http://something/thredds/catalog/my/catalog.xml')
-    await catalog.getNestedCatalogData()
+    await catalog.getAllNestedCatalogs()
     const datasets = catalog.getAllChildDatasets()
 }
-getDatasets()
+crawlThredds()
 ````
 
 **Using traditional promises & modules**
@@ -25,7 +25,7 @@ const threddsCrawler = require('thredds-catalog-crawler')
 
 threddsCrawler('http://something/thredds/catalog/my/catalog.xml')
 .then(function (catalog) {
-    catalog.getNestedCatalogData()
+    catalog.getAllNestedCatalogs()
 })
 ````
 
@@ -49,19 +49,21 @@ A `Catalog` represents the root object in a THREDDS heirarchy. Catalogs can cont
 | ------------- | --------- | ------------- |
 | url           | String    | Url of the catalog |
 | name          | String    | Name of the catalog |
+| isLoaded      | Boolean   | Indicates whether the endpoint has been loaded. If true then datasets and services will be populated, and limited catalog information. If false then most information will be unavailable. |
 | datasets      | Array     | An array of datasets found in the catalog |
 | catalogs      | Array     | An array of nested catalogs found in the catalog |
 | services      | Object    | An object containing the available services for a catalog, organised by service type | 
 | hasDatasets   | Boolean   | Indicates whether the catalog contains datasets directly |
 | hasNestedCatalogs   | Boolean   | Indicates whether the catalog contains nested catalogs |
-| wmsBase       | String    | The base url for a WMS service. If no WMS support is available then null. |
+| wmsBase       | String    | The base url for a WMS service. If no WMS support is available then null |
 | supportsWms   | Boolean   | Does a catalog have a WMS service for datasets |
 
 #### Methods
 | Method                | Returns         | Description  |
 | --------------------- | --------------- | ------------ |
-| getAllChildDatasets   | Array[Dataset1, Dataset2...] | Returns a flattened array of datasets from all nested catalogs |
-| getNestedCatalogData  | N/A             | Crawls nested catalogs - used to populate the `catalogs`property |
+| loadAllNestedCatalogs  | N/A             | Loads all nested catalogs recurrsively |
+| loadNestedCatalogById(id)  | Catalog     | Crawls a single nested catalog based on a id string |
+| getAllChildDatasets   | Array[Dataset1, Dataset2...] | Returns a flattened array of datasets from all nested catalogs which have been loaded. |
 
 
 ### Dataset

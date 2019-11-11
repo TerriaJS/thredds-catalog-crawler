@@ -14,7 +14,7 @@ test.before(async t => {
     catalog = await threddsCatalogCrawler(`${t.context.server}/thredds/catalog.xml`, {
         proxy: `${t.context.proxy}`
     })
-    await catalog.getAllNestedCatalogs()
+    await catalog.loadAllNestedCatalogs()
     dataset = catalog.datasets[0]
 });
 
