@@ -16,18 +16,8 @@ export default class Catalog {
         this._requestor = requestor
         this._urlObj = requestor.parseUrl(this.url)
 
-        // If the requests are being proxied in the browser there is potential
-        // to muck up the WMS url construction
-        if ((this.url.match(/:\//g)).length > 1) {
-            const origUrlParts = this.url.split('://')
-            this._unproxiedUrl = `${origUrlParts[0]}://${origUrlParts[2]}`
-            this._unproxiedUrlObj = requestor.parseUrl(this._unproxiedUrl)
-        } else {
-            this._unproxiedUrlObj = this._urlObj
-        }
-
         this._catalogBaseUrl = this.url.replace('catalog.xml', '')
-        this._rootUrl = `${this._unproxiedUrlObj.protocol}//${this._unproxiedUrlObj.host}`
+        this._rootUrl = `${this._urlObj.protocol}//${this._urlObj.host}`
     }
 
     get hasDatasets () {
