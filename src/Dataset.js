@@ -49,6 +49,10 @@ export default class Dataset {
             }
         }
 
+        // Can a dataset contain catalogs?
+        // See https://www.unidata.ucar.edu/software/tds/current/catalog/InvCatalogSpec.html#dataset
+        //
+        // This code block is not covered by tests. 
         if (json.catalogRef) {
             if (!Array.isArray(json.catalogRef)) json.catalogRef = [json.catalogRef]
             for (let i = 0; i < json.catalogRef.length; i++) {
