@@ -68,15 +68,18 @@ export default class Dataset {
         }
     }
 
+    // Could this be the same as Catalog._cleanUrl?
     _cleanUrl (url) {
         // If the url is absolute return it as is...
         if (url.indexOf('://') >= 0) return url
 
+        // Assume there is only one "/" between _catalogBaseUrl and url.
         return `${this.parentCatalog._catalogBaseUrl}${url}`
     }
 
     get wmsUrl () {
         if (!this.supportsWms) return null
+        // Assume there is only one "/" between wmsBase and urlPath.
         return `${this.parentCatalog.wmsBase}${this.urlPath}?service=WMS&version=1.3.0&request=GetCapabilities`
     }
 

@@ -142,7 +142,7 @@ export default class Catalog {
     // A root catalog might be https://climate-services.it.csiro.au/thredds/catalog.xml
     //
     // And it might have       xlink:href="/thredds/catalog/data/nrm_ts/catalog.xml"
-    // which should go to      https://climate-services.it.csiro.au/thredds/catalog/data/dynamic/catalog.xml
+    // which should go to      https://climate-services.it.csiro.au/thredds/catalog/data/nrm_ts/catalog.xml
     //
     // And it also might have  xlink:href="aggregation/scaled_seasonal_timeseries.xml"
     // which should go to      https://climate-services.it.csiro.au/thredds/aggregation/scaled_seasonal_timeseries.xml
