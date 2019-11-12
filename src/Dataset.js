@@ -38,6 +38,8 @@ export default class Dataset {
 
     async getNestedData () {
         const json = this._datasetJson
+
+        // This code block is not covered by tests. 
         if (json.dataset) {
             if (!Array.isArray(json.dataset)) json.dataset = [json.dataset]
             for (let i = 0; i < json.dataset.length; i++) {
