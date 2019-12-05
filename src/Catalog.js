@@ -142,20 +142,24 @@ export default class Catalog {
     // A root catalog might be https://climate-services.it.csiro.au/thredds/catalog.xml
     //
     // And it might have       xlink:href="/thredds/catalog/data/nrm_ts/catalog.xml"
-    // which should go to      https://climate-services.it.csiro.au/thredds/catalog/data/dynamic/catalog.xml
+    // which should go to      https://climate-services.it.csiro.au/thredds/catalog/data/nrm_ts/catalog.xml
     //
     // And it also might have  xlink:href="aggregation/scaled_seasonal_timeseries.xml"
     // which should go to      https://climate-services.it.csiro.au/thredds/aggregation/scaled_seasonal_timeseries.xml
     _cleanUrl (url) {
-        // If the url is absolute go directly to it
+        // If the url is absolute go directly to it.
+        // This case is not covered by tests.
         if (url.indexOf('://') >= 0) return url
 
-        // Sometimes urls seems to extend from the current catalog
+        // Sometimes urls seems to extend from the current catalog.
+        // Assume that the url has no leading "/".
+        // This case is not covered by tests.
         if (url.indexOf('thredds') === -1) {
             return `${this._catalogBaseUrl}/${url}`
         }
 
-        // Sometimes the url reference seems to reference the root of the thredds server
+        // Sometimes the url reference seems to reference the root of the thredds server.
+        // Assume that the url has a leading "/".
         return `${this._rootUrl}${url}`
     }
 
