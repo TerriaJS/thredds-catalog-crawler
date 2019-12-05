@@ -19,7 +19,11 @@
       "esm"
     ]
   },
-  "author": "",
+  "author": "Rowan Winsemius",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/TerriaJS/thredds-catalog-crawler"
+  },
   "license": "MIT",
   "dependencies": {
     "fast-xml-parser": "^3.14.0"
