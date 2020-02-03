@@ -1,4 +1,4 @@
-import Requestor from './requestor'
+import Requestor from './Requestor'
 import { parseUrl } from './urlParsingBrowser'
 
 import threddsCatalogCrawler from './main'
