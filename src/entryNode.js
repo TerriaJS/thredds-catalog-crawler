@@ -1,5 +1,6 @@
 import Requestor from './Requestor'
 import { parseUrl } from './urlParsingNode'
+import xmldom from 'xmldom';
 
 import threddsCatalogCrawler from './main'
 
@@ -8,7 +9,7 @@ export default async function entry (url, options) {
     if ('proxy' in options) {
         options.proxy = options.proxy.slice(-1) === '/' ? options.proxy : options.proxy + '/'
     }
-    const requestor = new Requestor(parseUrl, options)
+    const requestor = new Requestor(parseUrl, options, xmldom.DOMParser)
     const c = await threddsCatalogCrawler(url, requestor)
     return c
 }

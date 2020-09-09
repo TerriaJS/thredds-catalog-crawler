@@ -26,7 +26,8 @@
   },
   "license": "MIT",
   "dependencies": {
-    "fast-xml-parser": "^3.14.0"
+    "fast-xml-parser": "^3.14.0",
+    "xmldom": "^0.3.0"
   },
   "devDependencies": {
     "ava": "^2.4.0",

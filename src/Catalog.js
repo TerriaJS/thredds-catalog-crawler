@@ -4,11 +4,10 @@ import Service from './Service'
 export default class Catalog {
 
     constructor (catalogUrl, catalogJson, parentCatalog, requestor) {
-
         this.url = catalogUrl
-        this.name = catalogJson !== null ? catalogJson.$name : null
-        this.title = catalogJson !== null ? catalogJson['$xlink:title'] : null
-        this.id = catalogJson !== null ? catalogJson.$ID : null
+        this.name = catalogJson !== null ? catalogJson.name : null
+        this.title = catalogJson !== null ? catalogJson['xlink:title'] : null
+        this.id = catalogJson !== null ? catalogJson.ID : null
         this.isLoaded = false
         this.datasets = []
         this.catalogs = []
@@ -48,8 +47,8 @@ export default class Catalog {
 
     async _processCatalog () {
         const json = this._catalogJson
-        if (this.name === null || this.name === '') this.name = json.$name
-        if (this.title === null || this.title === '') this.title = json['$xlink:title']
+        if (this.name === null || this.name === '') this.name = json.name
+        if (this.title === null || this.title === '') this.title = json['xlink:title']
         if (this.id === null) this.id = json.ID
 
         if (json.dataset) {
@@ -68,7 +67,7 @@ export default class Catalog {
         if (json.catalogRef) {
             if (!Array.isArray(json.catalogRef)) json.catalogRef = [json.catalogRef]
             for (let i = 0; i < json.catalogRef.length; i++) {
-                const url = this._cleanUrl(json.catalogRef[i]['$xlink:href'])
+                const url = this._cleanUrl(json.catalogRef[i]['xlink:href'])
                 try {
                     const ci = new Catalog(url, json.catalogRef[i], this, this._requestor)
                     this.catalogs.push(ci)
