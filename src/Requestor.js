@@ -16,110 +16,88 @@ export default class Requestor {
     }
 
     parseStringSync (str) {
-        return parseXml(str, false, this.DOMParser)
+        return parseXML(str, false, this.DOMParser)
     }
 
 }
 
-function parseXml(xml, extended, DomParser) {
+function parseXML(xml, extended, DomParser) {
     if (!xml) return {};
 
     function parseXML(node, simple) {
-      if (!node) return null;
-      var txt = "",
-        obj = null,
-        att = null;
-      var nt = node.nodeType,
-        nn = jsVar(node.localName || node.nodeName);
-      var nv = node.text || node.nodeValue || ""; //if(window.console) console.log(['x2j',nn,nt,nv.length+' bytes']);
-      /*DBG*/ if (node.childNodes) {
-        if (node.childNodes.length > 0) {
-          /*DBG*/ //if(window.console) console.log(['x2j',nn,'CHILDREN',node.childNodes]);
-          for (var n = 0; n < node.childNodes.length; ++n) {
-            var cn = node.childNodes[n];
-            var cnt = cn.nodeType,
-              cnn = jsVar(cn.localName || cn.nodeName);
-            var cnv = cn.text || cn.nodeValue || ""; //if(window.console) console.log(['x2j',nn,'node>a',cnn,cnt,cnv]);
-            /*DBG*/ if (cnt == 8) {
-              /*DBG*/ //if(window.console) console.log(['x2j',nn,'node>b',cnn,'COMMENT (ignore)']);
-              continue; // ignore comment node
-            } else if (cnt == 3 || cnt == 4 || !cnn) {
-              // ignore white-space in between tags
-              if (cnv.match(/^\s+$/)) {
-                /*DBG*/ //if(window.console) console.log(['x2j',nn,'node>c',cnn,'WHITE-SPACE (ignore)']);
-                continue;
-              } //if(window.console) console.log(['x2j',nn,'node>d',cnn,'TEXT']);
-              /*DBG*/ txt += cnv.replace(/^\s+/, "").replace(/\s+$/, "");
-              // make sure we ditch trailing spaces from markup
-            } else {
-              /*DBG*/ //if(window.console) console.log(['x2j',nn,'node>e',cnn,'OBJECT']);
-              obj = obj || {};
-              if (obj[cnn]) {
-                /*DBG*/ //if(window.console) console.log(['x2j',nn,'node>f',cnn,'ARRAY']);
-  
-                // http://forum.jquery.com/topic/jquery-jquery-xml2json-problems-when-siblings-of-the-same-tagname-only-have-a-textnode-as-a-child
-                if (!obj[cnn].length) obj[cnn] = myArr(obj[cnn]);
-                obj[cnn] = myArr(obj[cnn]);
-  
-                obj[cnn][obj[cnn].length] = parseXML(cn, true /* simple */);
-                obj[cnn].length = obj[cnn].length;
-              } else {
-                /*DBG*/ //if(window.console) console.log(['x2j',nn,'node>g',cnn,'dig deeper...']);
-                obj[cnn] = parseXML(cn);
-              }
+        if (!node) return null;
+        let txt = ''
+        let obj = null
+        let att = null
+        if (node.childNodes) {
+            if (node.childNodes.length > 0) {
+                for (var n = 0; n < node.childNodes.length; ++n) {
+                    const cn = node.childNodes[n]
+                    const cnt = cn.nodeType
+                    const cnn = jsVar(cn.localName || cn.nodeName)
+                    const cnv = cn.text || cn.nodeValue || ''
+                    if (cnt === 8) {
+                        continue;
+                    } else if (cnt === 3 || cnt === 4 || !cnn) {
+                        if (cnv.match(/^\s+$/)) {
+                            continue;
+                        }
+                        txt += cnv.replace(/^\s+/, '').replace(/\s+$/, '');
+                    } else {
+                        obj = obj || {};
+                        if (obj[cnn]) {
+                            if (!obj[cnn].length) obj[cnn] = myArr(obj[cnn]);
+                            obj[cnn] = myArr(obj[cnn]);
+
+                            obj[cnn][obj[cnn].length] = parseXML(cn, true);
+                            obj[cnn].length = obj[cnn].length;
+                        } else {
+                            obj[cnn] = parseXML(cn);
+                        }
+                    }
+                }
             }
-          }
-        } //node.childNodes.length>0
-      } //node.childNodes
-      if (node.attributes) {
-        if (node.attributes.length > 0) {
-          /*DBG*/ //if(window.console) console.log(['x2j',nn,'ATTRIBUTES',node.attributes])
-          att = {};
-          obj = obj || {};
-          for (var a = 0; a < node.attributes.length; ++a) {
-            var at = node.attributes[a];
-            var atn = jsVar(at.name),
-              atv = at.value;
-            att[atn] = atv;
-            if (obj[atn]) {
-              /*DBG*/ //if(window.console) console.log(['x2j',nn,'attr>',atn,'ARRAY']);
-  
-              // http://forum.jquery.com/topic/jquery-jquery-xml2json-problems-when-siblings-of-the-same-tagname-only-have-a-textnode-as-a-child
-              //if(!obj[atn].length) obj[atn] = myArr(obj[atn]);//[ obj[ atn ] ];
-              obj[cnn] = myArr(obj[cnn]);
-  
-              obj[atn][obj[atn].length] = atv;
-              obj[atn].length = obj[atn].length;
-            } else {
-              /*DBG*/ //if(window.console) console.log(['x2j',nn,'attr>',atn,'TEXT']);
-              obj[atn] = atv;
-            }
-          }
-          //obj['attributes'] = att;
-        } //node.attributes.length>0
-      } //node.attributes
-      if (obj) {
-        var newObj = txt != "" ? new String(txt) : {};
-        for (var prop in obj) {
-          if (obj.hasOwnProperty(prop)) {
-            newObj[prop] = obj[prop];
-          }
         }
-        obj = newObj;
-        //txt = (obj.text) ? (typeof(obj.text)=='object' ? obj.text : [obj.text || '']).concat([txt]) : txt;
-        txt = obj.text ? [obj.text || ""].concat([txt]) : txt;
-        if (txt) obj.text = txt;
-        txt = "";
-      }
-      var out = obj || txt;
-      //console.log([extended, simple, out]);
-      if (extended) {
-        if (txt) out = {}; //new String(out);
-        txt = out.text || txt || "";
-        if (txt) out.text = txt;
-        if (!simple) out = myArr(out);
-      }
-      return out;
+        if (node.attributes) {
+            if (node.attributes.length > 0) {
+                att = {};
+                obj = obj || {};
+                for (var a = 0; a < node.attributes.length; ++a) {
+                    let at = node.attributes[a]
+                    let atn = jsVar(at.name)
+                    let atv = at.value
+                    att[atn] = atv
+                    if (obj[atn]) {
+                        obj[cnn] = myArr(obj[cnn]);
+
+                        obj[atn][obj[atn].length] = atv;
+                        obj[atn].length = obj[atn].length;
+                    } else {
+                        obj[atn] = atv;
+                    }
+                }
+            }
+        }
+        if (obj) {
+            var newObj = txt !== '' ? new String(txt) : {};
+            for (var prop in obj) {
+                if (obj.hasOwnProperty(prop)) {
+                    newObj[prop] = obj[prop];
+                }
+            }
+            obj = newObj;
+            txt = obj.text ? [obj.text || ''].concat([txt]) : txt;
+            if (txt) obj.text = txt;
+            txt = '';
+        }
+        var out = obj || txt;
+        if (extended) {
+            if (txt) out = {};
+            txt = out.text || txt || '';
+            if (txt) out.text = txt;
+            if (!simple) out = myArr(out);
+        }
+        return out;
     }
 
     var jsVar = function(s) {
@@ -127,13 +105,9 @@ function parseXml(xml, extended, DomParser) {
     };
 
     var myArr = function(o) {
-      // http://forum.jquery.com/topic/jquery-jquery-xml2json-problems-when-siblings-of-the-same-tagname-only-have-a-textnode-as-a-child
-      //if(!o.length) o = [ o ]; o.length=o.length;
-      if (!Array.isArray(o)) o = [o];
-      o.length = o.length;
-  
-      // here is where you can attach additional functionality, such as searching and sorting...
-      return o;
+        if (!Array.isArray(o)) o = [o];
+        o.length = o.length;
+        return o;
     };
 
     if (typeof xml === 'string') {
