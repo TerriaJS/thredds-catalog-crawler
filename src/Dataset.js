@@ -4,9 +4,9 @@ export default class Dataset {
 
     constructor (datasetJson, parent) {
         this.parent = parent
-        this.id = datasetJson.$ID
-        this.name = datasetJson.$name
-        this.urlPath = datasetJson.$urlPath ? datasetJson.$urlPath : null
+        this.id = datasetJson.ID
+        this.name = datasetJson.name
+        this.urlPath = datasetJson.urlPath ? datasetJson.urlPath : null
 
         this.dataType = datasetJson.dataType ? datasetJson.dataType : null
         this.dataFormat = datasetJson.dataFormat ? datasetJson.dataFormat : null
@@ -56,7 +56,7 @@ export default class Dataset {
         if (json.catalogRef) {
             if (!Array.isArray(json.catalogRef)) json.catalogRef = [json.catalogRef]
             for (let i = 0; i < json.catalogRef.length; i++) {
-                const url = this._cleanUrl(json.catalogRef[i]['$xlink:href'])
+                const url = this._cleanUrl(json.catalogRef[i]['xlink:href'])
                 try {
                     const ci = new Catalog(url, json.catalogRef[i], this, this.parent._requestor)
                     await ci._loadCatalog()
