@@ -83,3 +83,7 @@ A `Dataset` can contain datasets, as well as references to other catalogs.
 | supportsWms       | Boolean        | Does this dataset have a WMS available |
 
 
+#### Methods
+| Method                | Returns         | Description  |
+| --------------------- | --------------- | ------------ |
+| loadAllNestedCatalogs  | N/A             | Loads all nested catalogs recurrsively |

@@ -55,7 +55,7 @@ export default class Catalog {
             if (!Array.isArray(json.dataset)) json.dataset = [json.dataset]
             for (var i = 0; i < json.dataset.length; i++) {
                 const ds = new Dataset(json.dataset[i], this)
-                await ds.getNestedData()
+                await ds.getNestedDatasets()
                 this.datasets.push(ds)
             }
         }

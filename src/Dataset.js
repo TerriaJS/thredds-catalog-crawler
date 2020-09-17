@@ -33,26 +33,24 @@ export default class Dataset {
         this.datasets = []
         this._datasetJson = datasetJson
 
+        this.catalogsAreLoaded = false
         this.catalogs = []
     }
 
-    async getNestedData () {
+    async getNestedDatasets () {
         const json = this._datasetJson
-
-        // This code block is not covered by tests. 
         if (json.dataset) {
             if (!Array.isArray(json.dataset)) json.dataset = [json.dataset]
             for (let i = 0; i < json.dataset.length; i++) {
                 const ds = new Dataset(json.dataset[i], this)
-                await ds.getNestedData()
+                await ds.getNestedDatasets()
                 this.datasets.push(ds)
             }
         }
+    }
 
-        // Can a dataset contain catalogs?
-        // See https://www.unidata.ucar.edu/software/tds/current/catalog/InvCatalogSpec.html#dataset
-        //
-        // This code block is not covered by tests. 
+    async loadAllNestedCatalogs () {
+        const json = this._datasetJson
         if (json.catalogRef) {
             if (!Array.isArray(json.catalogRef)) json.catalogRef = [json.catalogRef]
             for (let i = 0; i < json.catalogRef.length; i++) {
@@ -60,7 +58,6 @@ export default class Dataset {
                 try {
                     const ci = new Catalog(url, json.catalogRef[i], this, this.parent._requestor)
                     await ci._loadCatalog()
-                    await ci.loadAllNestedCatalogs()
                     this.catalogs.push(ci)
                 } catch (err) {
                     console.error(`Couldn't create catalog within dataset:
@@ -70,6 +67,7 @@ export default class Dataset {
                 }
             }
         }
+        this.catalogsAreLoaded = true
     }
 
     // Could this be the same as Catalog._cleanUrl?
