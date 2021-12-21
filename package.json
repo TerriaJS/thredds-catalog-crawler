@@ -1,6 +1,6 @@
 {
   "name": "thredds-catalog-crawler",
-  "version": "0.0.4",
+  "version": "0.0.6",
   "description": "A module for crawling thredds catalogs",
   "browser": "dist/threddsCrawler.min.js",
   "main": "dist/threddsCrawlerNode.js",

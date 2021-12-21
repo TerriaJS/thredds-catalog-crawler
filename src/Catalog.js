@@ -13,6 +13,7 @@ export default class Catalog {
         this.catalogs = []
         this.services = {}
         this.parentCatalog = parentCatalog
+        this.metadata = {}
 
         this._catalogJson = catalogJson
         this._requestor = requestor
@@ -50,6 +51,8 @@ export default class Catalog {
         if (this.name === null || this.name === '') this.name = json.name
         if (this.title === null || this.title === '') this.title = json['xlink:title']
         if (this.id === null) this.id = json.ID
+        if (Object.keys(this.metadata).length === 0 &&
+          json.metadata !== undefined) this.metadata = json.metadata
 
         if (json.dataset) {
             if (!Array.isArray(json.dataset)) json.dataset = [json.dataset]

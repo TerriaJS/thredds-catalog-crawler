@@ -29,6 +29,8 @@ export default class Dataset {
             this.date = null
         }
 
+        this.metadata = datasetJson.metadata ? datasetJson.metadata : null;
+
         this.isParentDataset = this.dataSize === null
         this.datasets = []
         this._datasetJson = datasetJson

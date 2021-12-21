@@ -17,6 +17,9 @@ test('Dataset has correct properties', function (t) {
     t.is(dataset.name, 'eReefs GBR4 SHOC Model v1.85 Results for 2016-06')
     t.is(dataset.id, 'fx3-gbr4/gbr4_simple_2016-06.nc')
     t.is(dataset.urlPath, 'fx3/gbr4/gbr4_simple_2016-06.nc')
+    t.not(dataset.metadata, undefined);
+    t.not(dataset.metadata, null);
+    t.notDeepEqual(dataset.metadata, {});
 })
 
 test('Dataset has correct parent', function (t) {

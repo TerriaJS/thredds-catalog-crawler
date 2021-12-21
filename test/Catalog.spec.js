@@ -14,6 +14,7 @@ test.before(async t => {
 test('Catalog has correct properties', function (t) {
     t.is(catalog.url, `${t.context.server}/thredds/catalog.xml`)
     t.is(catalog.name, 'My Parent Catalog')
+    t.notDeepEqual(catalog.metadata, {});
 })
 
 test('Catalog has correct datasets', function (t) {
