@@ -50,7 +50,6 @@ function parseXML(xml, extended, DomParser) {
                             obj[cnn] = myArr(obj[cnn]);
 
                             obj[cnn][obj[cnn].length] = parseXML(cn, true);
-                            obj[cnn].length = obj[cnn].length;
                         } else {
                             obj[cnn] = parseXML(cn);
                         }
@@ -71,7 +70,6 @@ function parseXML(xml, extended, DomParser) {
                         obj[cnn] = myArr(obj[cnn]);
 
                         obj[atn][obj[atn].length] = atv;
-                        obj[atn].length = obj[atn].length;
                     } else {
                         obj[atn] = atv;
                     }
@@ -106,7 +104,6 @@ function parseXML(xml, extended, DomParser) {
 
     var myArr = function(o) {
         if (!Array.isArray(o)) o = [o];
-        o.length = o.length;
         return o;
     };
 
