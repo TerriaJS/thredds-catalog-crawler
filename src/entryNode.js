@@ -1,6 +1,6 @@
 import Requestor from './Requestor'
 import { parseUrl } from './urlParsingNode'
-import xmldom from 'xmldom';
+import xmldom from '@xmldom/xmldom';
 
 import threddsCatalogCrawler from './main'
 
