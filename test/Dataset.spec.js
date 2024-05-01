@@ -1,7 +1,7 @@
 import test from 'ava'
 import 'isomorphic-fetch'
-import { startServer } from './xmlServer'
-import threddsCatalogCrawler from '../src/entryNode'
+import { startServer } from './xmlServer.js'
+import threddsCatalogCrawler from '../src/entryNode.js'
 
 let catalog = null
 let dataset = null
@@ -12,6 +12,8 @@ test.before(async t => {
     await catalog.loadAllNestedCatalogs()
     dataset = catalog.datasets[0]
 });
+
+test.after(t => t.context.server.stop());
 
 test('Dataset has correct properties', function (t) {
     t.is(dataset.name, 'eReefs GBR4 SHOC Model v1.85 Results for 2016-06')

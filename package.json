@@ -2,6 +2,7 @@
   "name": "thredds-catalog-crawler",
   "version": "0.0.6",
   "description": "A module for crawling thredds catalogs",
+  "type": "module",
   "browser": "dist/threddsCrawler.min.js",
   "main": "dist/threddsCrawlerNode.js",
   "unpkg": "dist/threddsCrawler.min.js",
@@ -14,9 +15,6 @@
     "files": [
       "./test/**/*.spec.js",
       "!./test/harness/**"
-    ],
-    "require": [
-      "esm"
     ]
   },
   "author": "Rowan Winsemius",
@@ -30,7 +28,7 @@
     "@xmldom/xmldom": "^0.8.10"
   },
   "devDependencies": {
-    "ava": "^2.4.0",
+    "ava": "^6.1.2",
     "cors-anywhere": "^0.4.1",
     "eslint": "^6.6.0",
     "eslint-config-standard": "^14.1.0",

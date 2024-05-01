@@ -1,5 +1,5 @@
-import Dataset from './Dataset'
-import Service from './Service'
+import Dataset from './Dataset.js'
+import Service from './Service.js'
 
 export default class Catalog {
 

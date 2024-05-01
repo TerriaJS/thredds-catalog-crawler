@@ -1,9 +1,9 @@
 import test from 'ava'
 import 'isomorphic-fetch'
-import { startServer } from './xmlServer'
-import { startProxy } from './proxyServer'
+import { startServer } from './xmlServer.js'
+import { startProxy } from './proxyServer.js'
 
-import threddsCatalogCrawler from '../src/entryNode'
+import threddsCatalogCrawler from '../src/entryNode.js'
 
 let catalog = null
 let dataset = null
@@ -16,6 +16,11 @@ test.before(async t => {
     })
     await catalog.loadAllNestedCatalogs()
     dataset = catalog.datasets[0]
+});
+
+test.after(t => {
+    t.context.server.stop();
+    t.context.proxy.stop()
 });
 
 test('Catalog has correct properties', function (t) {
