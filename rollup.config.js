@@ -1,7 +1,7 @@
-import commonjs from 'rollup-plugin-commonjs'
-import resolve from 'rollup-plugin-node-resolve'
-import json from 'rollup-plugin-json'
-import { terser } from 'rollup-plugin-terser'
+import commonjs from '@rollup/plugin-commonjs'
+import resolve from '@rollup/plugin-node-resolve'
+import json from '@rollup/plugin-json'
+import terser from '@rollup/plugin-terser'
 
 const output = (input, format, outputName, plugins) => ({
     input,
