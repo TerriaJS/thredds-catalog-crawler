@@ -8,5 +8,5 @@ export async function startProxy () {
         removeHeaders: []
     })
     const url = await listen(cp);
-    return url
+    return { toString: () => url, stop: () => cp.close() }
 }

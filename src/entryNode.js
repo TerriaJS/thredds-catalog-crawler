@@ -1,8 +1,8 @@
-import Requestor from './Requestor'
-import { parseUrl } from './urlParsingNode'
+import Requestor from './Requestor.js'
+import { parseUrl } from './urlParsingNode.js'
 import xmldom from '@xmldom/xmldom';
 
-import threddsCatalogCrawler from './main'
+import threddsCatalogCrawler from './main.js'
 
 export default async function entry (url, options) {
     options = options == null ? {} : options

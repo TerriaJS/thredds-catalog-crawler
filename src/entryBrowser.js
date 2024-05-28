@@ -1,7 +1,7 @@
-import Requestor from './Requestor'
-import { parseUrl } from './urlParsingBrowser'
+import Requestor from './Requestor.js'
+import { parseUrl } from './urlParsingBrowser.js'
 
-import threddsCatalogCrawler from './main'
+import threddsCatalogCrawler from './main.js'
 
 export default async function entry (url, options) {
     options = options == null ? {} : options

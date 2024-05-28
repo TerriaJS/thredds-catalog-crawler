@@ -1,7 +1,7 @@
 import test from 'ava'
 import 'isomorphic-fetch'
-import { startServer } from './xmlServer'
-import threddsCatalogCrawler from '../src/entryNode'
+import { startServer } from './xmlServer.js'
+import threddsCatalogCrawler from '../src/entryNode.js'
 
 let catalog = null
 
@@ -10,6 +10,8 @@ test.before(async t => {
     catalog = await threddsCatalogCrawler(`${t.context.server}/thredds/catalog.xml`)
     await catalog.loadAllNestedCatalogs()
 });
+
+test.after(t => t.context.server.stop());
 
 test('Catalog has correct properties', function (t) {
     t.is(catalog.name, 'My Parent Catalog')
